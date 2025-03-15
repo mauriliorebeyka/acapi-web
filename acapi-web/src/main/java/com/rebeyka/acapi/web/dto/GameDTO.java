@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameInProgress {
+public class GameDTO {
 
 	private String gameId;
 	private int round;
 	private String firstPlayer;
 	private List<String> activePlayers = new ArrayList<>();
-	private List<EngagedPlayer> players = new ArrayList<>();
+	private List<PlayerDTO> players = new ArrayList<>();
 	private List<String> log = new ArrayList<>();
 }

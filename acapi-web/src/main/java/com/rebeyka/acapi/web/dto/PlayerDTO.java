@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class EngagedPlayer {
+public class PlayerDTO {
 
 	private String playerId;
 	private List<String> playIds = new ArrayList<>();

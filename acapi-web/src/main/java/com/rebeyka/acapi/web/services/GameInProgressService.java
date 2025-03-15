@@ -1,37 +1,61 @@
 package com.rebeyka.acapi.web.services;
 
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.rebeyka.acapi.entities.Attribute;
+import com.rebeyka.acapi.builders.GameSetup;
 import com.rebeyka.acapi.entities.Game;
 import com.rebeyka.acapi.entities.Play;
 import com.rebeyka.acapi.entities.Player;
-import com.rebeyka.acapi.web.dto.EngagedPlayer;
-import com.rebeyka.acapi.web.dto.GameInProgress;
+import com.rebeyka.acapi.exceptions.WrongPlayerCountException;
+import com.rebeyka.acapi.web.dto.GameDTO;
+import com.rebeyka.acapi.web.dto.GameLobby;
 
 @Service
 public class GameInProgressService {
 
-	public GameInProgress generateGameInProgress(String gameId, Game game) {
-		GameInProgress gameInProgress = new GameInProgress();
-
-		gameInProgress.setGameId(gameId);
-		gameInProgress.setLog(game.getLog());
-		gameInProgress.setRound(game.getGameFlow().getRound());
-		gameInProgress.setFirstPlayer(game.getGameFlow().getFirstPlayer().getId());
-		gameInProgress.setActivePlayers(game.getPlayers().stream().
-				filter(p -> game.getGameFlow().isPlayerActive(p)).map(p -> p.getId()).toList());
-		for (Player player : game.getPlayers()) {
-			EngagedPlayer engagedPlayer = new EngagedPlayer();
-			engagedPlayer.setPlayerId(player.getId());
-			engagedPlayer.setPlayIds(player.getPlays().stream().map(Play::getId).toList());
-			engagedPlayer.setAttributes(player.getAttributes().entrySet().stream()
-					.collect(Collectors.toMap(k -> k.getKey(), v -> v.getValue().get())));
-			gameInProgress.getPlayers().add(engagedPlayer);
-		}
-
-		return gameInProgress;
+	@Autowired
+	private GameLobbyService gameLobbyService;
+	
+	@Autowired
+	private GameDTOBuilder gameDtoBuilder;
+	
+	private Map<String, Game> gamesInProgress = new HashMap<>();
+	
+	public GameDTO getGame(String gameId) {
+		return gameDtoBuilder.fromGame(gamesInProgress.get(gameId));
+	}
+	
+	public GameDTO startGame(String gameId) throws WrongPlayerCountException {
+		GameLobby startingGame = gameLobbyService.getLobby(gameId);
+		GameSetup gameSetup = gameLobbyService.getLobby(gameId).getGameSetup();
+		startingGame.getPlayersNames().stream().forEach(gameSetup::addPlayer);
+		gameSetup.setGameId(gameId);
+		Game game = gameSetup.newGame();
+		gamesInProgress.put(gameId, game);
+		return gameDtoBuilder.fromGame(game);
+	}
+	
+	public GameDTO declarePlay(String gameId, String playerId, String playId) {
+		Game game = gamesInProgress.get(gameId);
+		Player player = game.findPlayer(playerId);
+		Play play = game.findPlay(player, playId);
+		game.declarePlay(player, play);
+		return gameDtoBuilder.fromGame(game);
+	}
+	
+	public GameDTO execute(String gameId) {
+		Game game = gamesInProgress.get(gameId);
+		game.executeNext();
+		return gameDtoBuilder.fromGame(game);
+	}
+	
+	public GameDTO executeAll(String gameId) {
+		Game game = gamesInProgress.get(gameId);
+		game.executeAll();
+		return gameDtoBuilder.fromGame(game);
 	}
 }
