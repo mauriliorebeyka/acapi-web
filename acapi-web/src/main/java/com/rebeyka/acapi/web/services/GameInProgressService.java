@@ -10,6 +10,7 @@ import com.rebeyka.acapi.builders.GameSetup;
 import com.rebeyka.acapi.entities.Game;
 import com.rebeyka.acapi.entities.Play;
 import com.rebeyka.acapi.entities.Player;
+import com.rebeyka.acapi.exceptions.GameElementNotFoundException;
 import com.rebeyka.acapi.exceptions.WrongPlayerCountException;
 import com.rebeyka.acapi.web.dto.GameDTO;
 import com.rebeyka.acapi.web.dto.GameLobby;
@@ -40,7 +41,7 @@ public class GameInProgressService {
 	}
 	
 	public GameDTO declarePlay(String gameId, String playerId, String playId) {
-		Game game = gamesInProgress.get(gameId);
+		Game game = getGameInProgress(gameId);
 		Player player = game.findPlayer(playerId);
 		Play play = game.findPlay(player, playId);
 		game.declarePlay(player, play);
@@ -48,14 +49,22 @@ public class GameInProgressService {
 	}
 	
 	public GameDTO execute(String gameId) {
-		Game game = gamesInProgress.get(gameId);
+		Game game = getGameInProgress(gameId);
 		game.executeNext();
 		return gameDtoBuilder.fromGame(game);
 	}
 	
 	public GameDTO executeAll(String gameId) {
-		Game game = gamesInProgress.get(gameId);
+		Game game = getGameInProgress(gameId);
 		game.executeAll();
 		return gameDtoBuilder.fromGame(game);
+	}
+	
+	private Game getGameInProgress(String gameId) {
+		Game game = gamesInProgress.get(gameId);
+		if (game == null) {
+			throw new GameElementNotFoundException("Could not find game %s".formatted(gameId));
+		}
+		return game;
 	}
 }

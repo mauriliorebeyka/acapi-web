@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.rebeyka.acapi.web.dto.GameLobby;
-import com.rebeyka.acapi.web.exceptions.GameSetupNotFoundException;
 
 @Service
 public class GameLobbyService {

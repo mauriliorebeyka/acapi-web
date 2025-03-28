@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.rebeyka.acapi.builders.GameSetup;
 import com.rebeyka.acapi.web.dto.GameDescription;
-import com.rebeyka.acapi.web.exceptions.GameSetupNotFoundException;
+import com.rebeyka.acapi.web.exceptions.GameNotFoundException;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -59,9 +59,9 @@ public class GameLookupService {
 		return new GameDescription(entry.getKey(), description);
 	}
 	
-	public GameSetup lookupByName(String name) throws GameSetupNotFoundException {
+	public GameSetup lookupByName(String name) throws GameNotFoundException {
 		if (!setups.containsKey(name) || setups.get(name) == null) {
-			throw new GameSetupNotFoundException(name);
+			throw new GameNotFoundException("Could not find Game Setup with Name %s".formatted(name));
 		}
 		
 		try {
@@ -69,7 +69,7 @@ public class GameLookupService {
 			return (GameSetup) clazz.getDeclaredConstructor().newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			throw new GameSetupNotFoundException(name, e);
+			throw new GameNotFoundException("Could not find Game Setup with Name %s".formatted(name), e);
 		}
 	}
 }

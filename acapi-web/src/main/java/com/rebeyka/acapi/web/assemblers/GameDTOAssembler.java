@@ -15,18 +15,24 @@ import com.rebeyka.acapi.web.controllers.GameInProgressController;
 import com.rebeyka.acapi.web.dto.GameDTO;
 
 @Component
-public class GameDTOAssembler implements RepresentationModelAssembler<GameDTO, EntityModel<GameDTO>>{
+public class GameDTOAssembler implements RepresentationModelAssembler<GameDTO, EntityModel<GameDTO>> {
 
 	@Override
 	public EntityModel<GameDTO> toModel(GameDTO entity) {
-		return EntityModel.of(entity,getLinks(entity));
+		return EntityModel.of(entity, getLinks(entity));
 	}
 
 	private List<Link> getLinks(GameDTO entity) {
 		List<Link> links = new ArrayList<>();
-		
+
 		links.add(linkTo(methodOn(GameInProgressController.class).gameStatus(entity.getGameId())).withSelfRel());
-		
+		links.add(linkTo(methodOn(GameInProgressController.class).declarePlay(entity.getGameId(), null))
+				.withRel("declarePlay"));
+
+		links.add(linkTo(methodOn(GameInProgressController.class).execute(entity.getGameId())).withRel("execute"));
+		links.add(
+				linkTo(methodOn(GameInProgressController.class).executeAll(entity.getGameId())).withRel("executeAll"));
+
 		return links;
 	}
 }

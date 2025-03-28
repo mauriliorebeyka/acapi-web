@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,6 +40,7 @@ public class GameInProgressController {
 			@RequestBody DeclaringPlay declaringPlay) {
 		String playerName = declaringPlay.getPlayerName();
 		String playId = declaringPlay.getPlayId();
+		
 		return ResponseEntity.accepted()
 				.body(gameDtoAssembler.toModel(gameInProgressService.declarePlay(gameId, playerName, playId)));
 	}

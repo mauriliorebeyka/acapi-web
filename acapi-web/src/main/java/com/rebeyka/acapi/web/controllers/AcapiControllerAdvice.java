@@ -7,7 +7,7 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.rebeyka.acapi.web.exceptions.GameSetupNotFoundException;
+import com.rebeyka.acapi.web.exceptions.GameNotFoundException;
 
 @ControllerAdvice
 public class AcapiControllerAdvice {
@@ -21,7 +21,7 @@ public class AcapiControllerAdvice {
 	}
 	
 	@ExceptionHandler
-	public ErrorResponse handleNotFound(GameSetupNotFoundException e) {
+	public ErrorResponse handleNotFound(GameNotFoundException e) {
 		LOG.error("Not found",e);
 		return ErrorResponse.create(e, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 	}
