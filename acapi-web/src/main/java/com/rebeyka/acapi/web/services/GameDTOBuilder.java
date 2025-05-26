@@ -4,9 +4,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.rebeyka.acapi.builders.PlayBuilder;
 import com.rebeyka.acapi.entities.Game;
 import com.rebeyka.acapi.entities.Player;
+import com.rebeyka.acapi.entities.gameflow.Play;
 import com.rebeyka.acapi.web.dto.GameDTO;
 import com.rebeyka.acapi.web.dto.PlayerDTO;
 
@@ -20,17 +20,18 @@ public class GameDTOBuilder {
 		gameDTO.setLog(game.getLog());
 		gameDTO.setRound(game.getGameFlow().getRound());
 		gameDTO.setFirstPlayer(game.getGameFlow().getFirstPlayer().getId());
-		gameDTO.setActivePlayers(game.getPlayers().stream().
-				filter(p -> game.getGameFlow().isPlayerActive(p)).map(p -> p.getId()).toList());
+		gameDTO.setActivePlayers(game.getPlayers().stream().filter(p -> game.getGameFlow().isPlayerActive(p))
+				.map(p -> p.getId()).toList());
 		for (Player player : game.getPlayers()) {
 			PlayerDTO playerDTO = new PlayerDTO();
 			playerDTO.setPlayerId(player.getId());
-			playerDTO.setPlayIds(player.getPlays().stream().map(PlayBuilder::getId).toList());
-			playerDTO.setAttributes(player.getAttributes().entrySet().stream()
-					.collect(Collectors.toMap(k -> k.getKey(), v -> v.getValue().get())));
+			playerDTO.setPlayIds(player.getPlays().stream().map(Play::getName).toList());
+			playerDTO.setAttributes(player.getAttributeNames().stream()
+					.collect(Collectors.toMap(k -> k, v -> player.getAttribute(v).get())));
 			gameDTO.getPlayers().add(playerDTO);
 		}
 
 		return gameDTO;
 	}
+
 }

@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.rebeyka.acapi.builders.GameSetup;
-import com.rebeyka.acapi.builders.PlayBuilder;
 import com.rebeyka.acapi.entities.Game;
 import com.rebeyka.acapi.entities.Player;
+import com.rebeyka.acapi.entities.gameflow.Play;
 import com.rebeyka.acapi.exceptions.GameElementNotFoundException;
 import com.rebeyka.acapi.exceptions.WrongPlayerCountException;
 import com.rebeyka.acapi.web.dto.GameDTO;
@@ -43,7 +43,7 @@ public class GameInProgressService {
 	public GameDTO declarePlay(String gameId, String playerId, String playId) {
 		Game game = getGameInProgress(gameId);
 		Player player = game.findPlayer(playerId);
-		PlayBuilder play = game.findPlay(player, playId);
+		Play play = game.findPlay(player, playId);
 		//TODO get target from client
 		//game.declarePlay(player, play);
 		return gameDtoBuilder.fromGame(game);
