@@ -1,6 +1,8 @@
 package com.rebeyka.acapi.web.services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.rebeyka.acapi.builders.GameSetup;
 import com.rebeyka.acapi.entities.Game;
+import com.rebeyka.acapi.entities.Playable;
 import com.rebeyka.acapi.entities.Player;
 import com.rebeyka.acapi.entities.gameflow.Play;
 import com.rebeyka.acapi.exceptions.GameElementNotFoundException;
@@ -40,12 +43,12 @@ public class GameInProgressService {
 		return gameDtoBuilder.fromGame(game);
 	}
 	
-	public GameDTO declarePlay(String gameId, String playerId, String playId) {
+	public GameDTO declarePlay(String gameId, String playerId, String playId, List<String> targetIds) {
 		Game game = getGameInProgress(gameId);
 		Player player = game.findPlayer(playerId);
 		Play play = game.findPlay(player, playId);
-		//TODO get target from client
-		//game.declarePlay(player, play);
+		List<Playable> targets = targetIds.stream().map(id -> game.findPlayable(id)).toList();
+		game.declarePlay(play, targets, false);
 		return gameDtoBuilder.fromGame(game);
 	}
 	

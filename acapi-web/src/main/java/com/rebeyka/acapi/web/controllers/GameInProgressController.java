@@ -1,5 +1,8 @@
 package com.rebeyka.acapi.web.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
@@ -40,9 +43,9 @@ public class GameInProgressController {
 			@RequestBody DeclaringPlay declaringPlay) {
 		String playerName = declaringPlay.getPlayerName();
 		String playId = declaringPlay.getPlayId();
-		
+		List<String> targets = declaringPlay.getTargets() == null ? new ArrayList<String>() : declaringPlay.getTargets();
 		return ResponseEntity.accepted()
-				.body(gameDtoAssembler.toModel(gameInProgressService.declarePlay(gameId, playerName, playId)));
+				.body(gameDtoAssembler.toModel(gameInProgressService.declarePlay(gameId, playerName, playId, targets)));
 	}
 
 	@PostMapping("/execute")

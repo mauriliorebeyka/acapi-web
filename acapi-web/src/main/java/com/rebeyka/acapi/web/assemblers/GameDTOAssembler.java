@@ -11,6 +11,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+import com.rebeyka.acapi.view.GameView;
 import com.rebeyka.acapi.web.controllers.GameInProgressController;
 import com.rebeyka.acapi.web.dto.GameDTO;
 
@@ -25,13 +26,14 @@ public class GameDTOAssembler implements RepresentationModelAssembler<GameDTO, E
 	private List<Link> getLinks(GameDTO entity) {
 		List<Link> links = new ArrayList<>();
 
-		links.add(linkTo(methodOn(GameInProgressController.class).gameStatus(entity.getGameId())).withSelfRel());
-		links.add(linkTo(methodOn(GameInProgressController.class).declarePlay(entity.getGameId(), null))
+		String gameId = entity.getGameView().getAttributeView().stream().filter(a -> "ID".equals(a.getAttributeName())).findFirst().get().getAttributeValue().toString();
+		links.add(linkTo(methodOn(GameInProgressController.class).gameStatus(gameId)).withSelfRel());
+		links.add(linkTo(methodOn(GameInProgressController.class).declarePlay(gameId, null))
 				.withRel("declarePlay"));
 
-		links.add(linkTo(methodOn(GameInProgressController.class).execute(entity.getGameId())).withRel("execute"));
+		links.add(linkTo(methodOn(GameInProgressController.class).execute(gameId)).withRel("execute"));
 		links.add(
-				linkTo(methodOn(GameInProgressController.class).executeAll(entity.getGameId())).withRel("executeAll"));
+				linkTo(methodOn(GameInProgressController.class).executeAll(gameId)).withRel("executeAll"));
 
 		return links;
 	}
