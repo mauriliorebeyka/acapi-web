@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rebeyka.acapi.actionables.Actionable;
-import com.rebeyka.acapi.check.AbstractCheck;
+import com.rebeyka.acapi.check.Checkable;
 import com.rebeyka.acapi.entities.Cost;
 import com.rebeyka.acapi.entities.Game;
 import com.rebeyka.acapi.entities.Playable;
@@ -54,7 +54,7 @@ public class GameDTOAssembler implements RepresentationModelAssembler<GameDTO, E
 		return new Jackson2ObjectMapperBuilder().mixIn(Playable.class, PlayableMixin.class).mixIn(Play.class, PlayMixin.class);
 	}
 	
-	public static class PlayableMixin {
+	public static abstract class PlayableMixin {
 		@JsonIgnore
 		List<Play> plays;
 		@JsonIgnore
@@ -63,18 +63,21 @@ public class GameDTOAssembler implements RepresentationModelAssembler<GameDTO, E
 		Player owner;
 	}
 	
-	public static class PlayMixin {
+	public static abstract class PlayMixin {
 		@JsonIgnore
 		private Game game;
 		@JsonIgnore
 		private Cost cost;
 		@JsonIgnore
-		private AbstractCheck<?,Playable,Playable> condition;
+		private Checkable<Playable> condition;
 		@JsonIgnore
 		private List<Supplier<Actionable>> actionables;
 		@JsonIgnore
 		private Trigger triggeredBy;
 		@JsonIgnore
 		private List<Supplier<Actionable>> actionableSuppliers;
+		
+		@JsonIgnore
+		abstract List<Actionable> getActionableTemplates();
 	}
 }
