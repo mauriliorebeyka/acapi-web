@@ -46,7 +46,7 @@ public class GameInProgressService {
 		Game game = getGameInProgress(gameId);
 		Player player = game.findPlayer(playerId);
 		Play play = game.findPlay(player, playId);
-		List<Playable> targets = targetIds.stream().map(id -> game.findPlayable(id)).toList();
+		List<Playable> targets = targetIds.stream().map(game::findPlayable).toList();
 		game.declarePlay(play, targets, false);
 		return gameDtoBuilder.fromGame(game);
 	}
