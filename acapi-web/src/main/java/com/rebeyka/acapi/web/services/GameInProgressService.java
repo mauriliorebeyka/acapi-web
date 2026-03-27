@@ -44,9 +44,9 @@ public class GameInProgressService {
 	
 	public GameDTO declarePlay(String gameId, String playerId, String playId, List<String> targetIds) {
 		Game game = getGameInProgress(gameId);
-		Player player = game.findPlayer(playerId);
-		Play play = game.findPlay(player, playId);
-		List<Playable> targets = targetIds.stream().map(game::findPlayable).toList();
+		Player player = game.find().player(playerId);
+		Play play = game.find().play(player, playId);
+		List<Playable> targets = game.find().playables(targetIds);
 		game.declarePlay(play, targets, false);
 		return gameDtoBuilder.fromGame(game);
 	}
